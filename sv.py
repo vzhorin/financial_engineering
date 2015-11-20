@@ -14,7 +14,7 @@ def sv(S,K,v,t,r,dy,lambd, tv,kv,sv,rho, callput):
 #           r: interest rate
 #           dy: dividend yield
 #
-#   PAREMTRIC INPUTS
+#   PARAMETRIC INPUTS
 #         lambd - market price of risk  
 #         tv: theta unconditonal variance
 #         kv: kappa speed of mean reversion
