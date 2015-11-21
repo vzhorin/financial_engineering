@@ -1,41 +1,43 @@
-%vz
+%vz - convertable security
 %price lookback option using a Monte Carlo simulation and the Longstaff-Schwartz method
-price_zero = 7.85;   
+%%
+price_zero = 5;   
 price_cap = 20;
 price_cap_initial = 10;
 nominal = 1000.;
-coupon = .06;
+coupon = .08;
 %volatility
-sig =.83;	
-time_to_expiry=5.;           
-interest_rate = log(1+5.80/100/4.)*4.;
-lookback_window =22;
+sig = .20;	
+time_to_expiry = 5.;           
+interest_rate = log(1+4.50/100/4.)*4.;
+lookback_window = 16;
 %can only lookback after 6 months
 lookback_lock = 120;
+seed = 65987436;
 
 %time step - one trading day
-dt =1/252.;
+dt = 1/252.;
 %number of Monte-Carlo paths
 num_path = 100;
 
 time_period = time_to_expiry;
 num_grid = floor(time_period/dt);
 
-%conversion price discounts
+%conversion price discounts - from covenant
 conv_disc = zeros(num_grid,1);    
-for i =7:15
-    conv_disc(floor(i*21/dt/252:(i+1)*21/dt/252))= 0.01*i;
+for i = 7:15
+    conv_disc(floor(i*21/dt/252:(i+1)*21/dt/252)) = 0.01*i;
 end 
 conv_disc((i+1)*21/dt/252:end) = 0.01*i;
 
-%not discounts before 15 month
+%not discounts before 15 month  - from covenant
 conv_dis(1:14*21/dt/252) =0;
 conv_disc = 1- conv_disc; 
-
+randn('state',seed);
 delta_w = sqrt(dt)*randn(num_path,num_grid);
 price_sim = price_zero*ones(num_path,num_grid);
 price_adj = zeros(num_path,1);
-
+%%
 icount =1;
 for i=2:num_grid
     delta_grid = delta_w(:,i);
@@ -52,16 +54,15 @@ total = exp((coupon)*time_to_expiry)*principal;
 
 payoff = NaN*ones(num_path,num_grid);
 payoff(:,num_grid) = total;
-   
 
+%% starting MC simulation processing
 for i = 1:num_grid-1
-       
     grid_point = num_grid-i;
 % only search where adjusted price with 22 days min is lower than current
 % price discounted (to be implemented)
     price_adj = min(price_sim(:,max(1,grid_point-lookback_window):grid_point), [],2)*conv_disc(grid_point);
     if(grid_point <120)
-       price_adj= price_cap_initial*ones(length(price_adj),1);
+       price_adj = price_cap_initial*ones(length(price_adj),1);
     end
     %in_the_money = find(price_adj-price_sim(:, grid_point)*conv_disc(grid_point) < 0); 
     %in_the_money = find(payoff(grid_point+1) > 0);
@@ -82,9 +83,9 @@ for i = 1:num_grid-1
         y = sum(((ones(num_path,1)*exp(-interest_rate*[1:num_grid-grid_point]*dt)).*payoff(:,grid_point+1:num_grid))')';
     end
     stock_price = price_sim(:,grid_point);
+    
+    %LS regression
     x = [ones(num_path,1), stock_price, stock_price.^2];
-   
-%nice way to do regression   
     [U,W,V] = svd(x);
     b = V*(W\(U'*y));
 
@@ -103,6 +104,7 @@ for i = 1:num_grid-1
    payoff(continue_rule,grid_point) = zeros(length(continue_rule),1);
 end
  
+%%expected value
 final = sum(((ones(num_path,1)*exp(-interest_rate*[2:num_grid]*dt)).*payoff(:,2:num_grid))')';
 
 total = mean(final);
