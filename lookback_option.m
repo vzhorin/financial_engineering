@@ -13,7 +13,7 @@ interest_rate = log(1+4.50/100/4.)*4.;
 lookback_window = 16;
 %can only lookback after 6 months
 lookback_lock = 120;
-seed = 65987436;
+seed = 2590834526890;
 
 %time step - one trading day
 dt = 1/252.;
