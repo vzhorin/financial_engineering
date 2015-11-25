@@ -31,7 +31,7 @@ end
 conv_disc((i+1)*21/dt/252:end) = 0.01*i;
 
 %not discounts before 15 month  - from covenant
-conv_dis(1:14*21/dt/252) =0;
+conv_dis(1:14*21/dt/252) = 0;
 conv_disc = 1- conv_disc; 
 randn('state',seed);
 delta_w = sqrt(dt)*randn(num_path,num_grid);
@@ -60,8 +60,10 @@ for i = 1:num_grid-1
     grid_point = num_grid-i;
 % only search where adjusted price with 22 days min is lower than current
 % price discounted (to be implemented)
-    price_adj = min(price_sim(:,max(1,grid_point-lookback_window):grid_point), [],2)*conv_disc(grid_point);
-    if(grid_point <120)
+    price_adj = ...
+      min(price_sim(:,max(1,grid_point-lookback_window):grid_point), ...
+      [],2)*conv_disc(grid_point);
+    if(grid_point < 120)
        price_adj = price_cap_initial*ones(length(price_adj),1);
     end
     %in_the_money = find(price_adj-price_sim(:, grid_point)*conv_disc(grid_point) < 0); 
@@ -84,7 +86,7 @@ for i = 1:num_grid-1
     end
     stock_price = price_sim(:,grid_point);
     
-    %LS regression
+    %LS regression up to second term
     x = [ones(num_path,1), stock_price, stock_price.^2];
     [U,W,V] = svd(x);
     b = V*(W\(U'*y));
