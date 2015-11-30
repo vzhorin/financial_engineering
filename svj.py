@@ -28,7 +28,7 @@ def svj(S,K,v,t,r,dy,l,mj,sj,tv,kv,sv,rho, callput):
 # TO BE CHANGED IN THE FUNCTIONS THEMSELVES
 
 #test case:
-#svj(7.85,20,0.73**2,0.5,0.0576,0.,-0.47,0.96,1.18,0.98,0,0) =11.81
+#svj(7.85,20,0.73**2,0.5,0.0576,0.,-0.47,0.96,1.18,0.98,0,0,0,0) =11.81
 
 
    ep= 0.00001;
