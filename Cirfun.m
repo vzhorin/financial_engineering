@@ -1,6 +1,6 @@
-function [PriceT, YieldT]=CIRFun(vec,r0,T,logFlag)
+function [PriceT, YieldT] = CIRFun(vec,r0,T,logFlag)
 
-% [PriceT, YieldT]=CIRFun(vec,r0,T,h)
+% [PriceT, YieldT] = CIRFun(vec,r0,T,h)
 % Compute the price and yield curve of the CIR model:
 %
 %		 dr = (eta - gamma r) dt + sqrt(alpha r) dX
@@ -32,21 +32,21 @@ end
 % Return NaN if prices are not defined.
 if gamma^2+2*alpha<0
    warning('gamma^2+2*alpha<0: Price not Defined')
-   PriceT=NaN;
-   YieldT=NaN;
+   PriceT = NaN;
+   YieldT = NaN;
 elseif eta<= alpha/2
    warning('eta<= alpha/2: Price not Defined')
-   PriceT=NaN;
-   YieldT=NaN;
+   PriceT = NaN;
+   YieldT = NaN;
 else
    
    % if parameters are OK, use the formula to compute
    % the CIR prices.
    
-phi1=sqrt(gamma^2+2*alpha);
-B=2*(exp(phi1*T)-1)./((gamma+phi1)*(exp(phi1*T)-1)+2*phi1);
-A=((2*phi1*exp(.5*(phi1+gamma)*T))./((phi1+gamma)*(exp(phi1*T)-1)+2*phi1)).^(2*eta/alpha);
-PriceT=A.*exp(-B*r0);
-YieldT=-log(PriceT)./T;
+phi1 = sqrt(gamma^2+2*alpha);
+B = 2*(exp(phi1*T)-1)./((gamma+phi1)*(exp(phi1*T)-1)+2*phi1);
+A =( (2*phi1*exp(.5*(phi1+gamma)*T))./((phi1+gamma)*(exp(phi1*T)-1)+2*phi1)).^(2*eta/alpha);
+PriceT = A.*exp(-B*r0);
+YieldT = -log(PriceT)./T;
 
 end
